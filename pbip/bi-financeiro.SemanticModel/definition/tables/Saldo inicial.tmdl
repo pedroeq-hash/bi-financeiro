@@ -1,0 +1,34 @@
+/// Uma linha: saldo de caixa em 01/01/2023, ponto de partida da medida Saldo de caixa.
+table 'Saldo inicial'
+	isHidden
+	lineageTag: e737d45c-6971-4c69-a062-215ec3c7f2bd
+
+	column Data
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: 71f66c4a-de70-4506-86a5-212c17efd999
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Saldo
+		dataType: decimal
+		isHidden
+		formatString: "R$" #,0.00
+		lineageTag: 4cc0d48d-6187-40d5-8f51-ea8a7c551f9f
+		sourceColumn: Saldo
+
+	partition 'Saldo inicial' = m
+		mode: import
+		source =
+				let
+				    Fonte = LerCsv("saldo_inicial.csv"),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"data", type date}, {"saldo", Currency.Type}}, "en-US"),
+				    Nomes = Table.RenameColumns(Tipos, {{"data", "Data"}, {"saldo", "Saldo"}})
+				in
+				    Nomes
+

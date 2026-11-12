@@ -1,0 +1,46 @@
+relationship Lançamentos_Data_Calendário_Data
+	fromColumn: Lançamentos.Data
+	toColumn: Calendário.Data
+
+relationship 'Lançamentos_ID conta_Plano de contas_ID conta'
+	fromColumn: Lançamentos.'ID conta'
+	toColumn: 'Plano de contas'.'ID conta'
+
+relationship Orçamento_Mês_Calendário_Data
+	fromColumn: Orçamento.Mês
+	toColumn: Calendário.Data
+
+relationship 'Orçamento_ID conta_Plano de contas_ID conta'
+	fromColumn: Orçamento.'ID conta'
+	toColumn: 'Plano de contas'.'ID conta'
+
+relationship 'Títulos a receber_Data emissão_Calendário_Data'
+	fromColumn: 'Títulos a receber'.'Data emissão'
+	toColumn: Calendário.Data
+
+relationship 'Títulos a receber_Data recebimento_Calendário_Data'
+	isActive: false
+	fromColumn: 'Títulos a receber'.'Data recebimento'
+	toColumn: Calendário.Data
+
+relationship 'Títulos a receber_ID cliente_Clientes_ID cliente'
+	fromColumn: 'Títulos a receber'.'ID cliente'
+	toColumn: Clientes.'ID cliente'
+
+relationship 'Títulos a pagar_Data emissão_Calendário_Data'
+	fromColumn: 'Títulos a pagar'.'Data emissão'
+	toColumn: Calendário.Data
+
+relationship 'Títulos a pagar_Data pagamento_Calendário_Data'
+	isActive: false
+	fromColumn: 'Títulos a pagar'.'Data pagamento'
+	toColumn: Calendário.Data
+
+relationship 'Títulos a pagar_ID fornecedor_Fornecedores_ID fornecedor'
+	fromColumn: 'Títulos a pagar'.'ID fornecedor'
+	toColumn: Fornecedores.'ID fornecedor'
+
+relationship 'Títulos a pagar_ID conta_Plano de contas_ID conta'
+	fromColumn: 'Títulos a pagar'.'ID conta'
+	toColumn: 'Plano de contas'.'ID conta'
+

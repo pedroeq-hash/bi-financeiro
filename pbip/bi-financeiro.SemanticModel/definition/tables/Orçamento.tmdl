@@ -1,0 +1,40 @@
+/// Orçamento mensal por conta, com o mesmo sinal da DRE. Mês é o 1º dia do mês: relaciona com o Calendário diário.
+table Orçamento
+	lineageTag: 29a159a0-1558-4733-ad73-6356a1d2b024
+
+	column Mês
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: 7ae2226a-a086-4540-ac80-8b0c23f47616
+		summarizeBy: none
+		sourceColumn: Mês
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID conta'
+		dataType: int64
+		isHidden
+		lineageTag: d0a69881-bb2b-4ddd-b8a5-47d92dc17d1e
+		summarizeBy: none
+		sourceColumn: ID conta
+
+	column 'Valor orçado'
+		dataType: decimal
+		isHidden
+		formatString: "R$" #,0.00
+		lineageTag: 65ea1015-2879-49c2-bff4-e6e285825dd3
+		sourceColumn: Valor orçado
+
+	partition Orçamento = m
+		mode: import
+		source =
+				let
+				    Fonte = LerCsv("orcamento.csv"),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"mes", type date}, {"conta_id", Int64.Type}, {"valor_orcado", Currency.Type}}, "en-US"),
+				    Nomes = Table.RenameColumns(Tipos, {{"mes", "Mês"}, {"conta_id", "ID conta"}, {"valor_orcado", "Valor orçado"}})
+				in
+				    Nomes
+

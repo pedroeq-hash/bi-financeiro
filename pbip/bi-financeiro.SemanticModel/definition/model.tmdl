@@ -6,9 +6,24 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
-annotation __PBI_TimeIntelligenceEnabled = 1
+annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBI_ProTooling = ["DevMode"]
+annotation PBI_ProTooling = ["DevMode","MCP-PBIModeling"]
+
+annotation PBI_QueryOrder = ["PastaDados","LerCsv","Calendário","Plano de contas","Lançamentos","Orçamento","Títulos a receber","Títulos a pagar","Clientes","Fornecedores","Saldo inicial"]
+
+ref table Calendário
+ref table 'Plano de contas'
+ref table Lançamentos
+ref table Orçamento
+ref table 'Títulos a receber'
+ref table 'Títulos a pagar'
+ref table Clientes
+ref table Fornecedores
+ref table 'Saldo inicial'
+ref table 'Linhas DRE'
+ref table 'Faixas de aging'
+ref table _Medidas
 
 ref cultureInfo pt-BR
 

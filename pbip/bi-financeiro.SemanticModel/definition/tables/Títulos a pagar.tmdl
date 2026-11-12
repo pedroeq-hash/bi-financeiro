@@ -1,0 +1,74 @@
+/// Uma linha por título a pagar (compras, despesas, impostos, juros e distribuição de lucros). Data pagamento vazia = em aberto.
+table 'Títulos a pagar'
+	lineageTag: 43223371-0174-4166-a233-ecf166cbe4df
+
+	column 'ID título'
+		dataType: string
+		isHidden
+		lineageTag: 609b0b46-9beb-4996-b91e-fdbd04f43fc5
+		sourceColumn: ID título
+
+	column 'ID fornecedor'
+		dataType: string
+		isHidden
+		lineageTag: 1d0da060-250c-4a2f-b294-99cfce5335bc
+		sourceColumn: ID fornecedor
+
+	column 'ID conta'
+		dataType: int64
+		isHidden
+		lineageTag: 0adc8f9b-0776-43ef-8d24-a4c305400a38
+		summarizeBy: none
+		sourceColumn: ID conta
+
+	column 'Data emissão'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: b0122b1f-84b3-403d-b208-3621d03de1f7
+		summarizeBy: none
+		sourceColumn: Data emissão
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data vencimento'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 3dbe3d28-b234-4d71-aaf7-8b329ffbeba6
+		summarizeBy: none
+		sourceColumn: Data vencimento
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data pagamento'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 643e44e1-a863-4581-a7e3-1ff18127aab5
+		summarizeBy: none
+		sourceColumn: Data pagamento
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Valor
+		dataType: decimal
+		isHidden
+		formatString: "R$" #,0.00
+		lineageTag: ba4ace01-a61f-498d-aa6e-de745ced15af
+		sourceColumn: Valor
+
+	partition 'Títulos a pagar' = m
+		mode: import
+		source =
+				let
+				    Fonte = LerCsv("titulos_pagar.csv"),
+				    Vazios = Table.ReplaceValue(Fonte, "", null, Replacer.ReplaceValue, {"data_pagamento"}),
+				    Tipos = Table.TransformColumnTypes(Vazios, {{"conta_id", Int64.Type}, {"data_emissao", type date}, {"data_vencimento", type date}, {"data_pagamento", type date}, {"valor", Currency.Type}}, "en-US"),
+				    Nomes = Table.RenameColumns(Tipos, {{"titulo_id", "ID título"}, {"fornecedor_id", "ID fornecedor"}, {"conta_id", "ID conta"}, {"data_emissao", "Data emissão"}, {"data_vencimento", "Data vencimento"}, {"data_pagamento", "Data pagamento"}, {"valor", "Valor"}})
+				in
+				    Nomes
+

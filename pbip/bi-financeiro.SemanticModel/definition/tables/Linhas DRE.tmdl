@@ -1,0 +1,49 @@
+/// Linhas da matriz da DRE. Grupo: casa com Plano de contas pela Ordem DRE. Subtotal: soma dos grupos acima.
+table 'Linhas DRE'
+	lineageTag: c3d67926-300a-4721-a4d3-8f3f20c9cd83
+
+	column Ordem
+		dataType: int64
+		isHidden
+		lineageTag: e29df1d8-2024-451d-9542-b5384203f76b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ordem]
+
+	column Linha
+		dataType: string
+		lineageTag: 25e75982-b4bf-4e44-b560-d675d7f9a9b0
+		isNameInferred
+		sourceColumn: [Linha]
+		sortByColumn: Ordem
+
+	column Tipo
+		dataType: string
+		isHidden
+		lineageTag: a1ab83a8-271c-46d2-83fe-57cda4d2cee2
+		isNameInferred
+		sourceColumn: [Tipo]
+
+	partition 'Linhas DRE' = calculated
+		mode: import
+		source =
+				DATATABLE(
+				    "Ordem", INTEGER, "Linha", STRING, "Tipo", STRING,
+				    {
+				        {1, "Receita bruta", "Grupo"},
+				        {2, "(−) Deduções", "Grupo"},
+				        {3, "(=) Receita líquida", "Subtotal"},
+				        {4, "(−) CMV", "Grupo"},
+				        {5, "(=) Lucro bruto", "Subtotal"},
+				        {6, "(−) Despesas comerciais", "Grupo"},
+				        {7, "(−) Despesas administrativas", "Grupo"},
+				        {8, "(−) Logística", "Grupo"},
+				        {9, "(=) EBITDA", "Subtotal"},
+				        {10, "(−) Depreciação", "Grupo"},
+				        {11, "(±) Resultado financeiro", "Grupo"},
+				        {12, "(=) Lucro antes do IR", "Subtotal"},
+				        {13, "(−) IR/CSLL", "Grupo"},
+				        {14, "(=) Lucro líquido", "Subtotal"}
+				    }
+				)
+

@@ -1,0 +1,29 @@
+/// Fornecedores e demais credores (fisco, folha, banco, sócios). Categoria separa as saídas de caixa.
+table Fornecedores
+	lineageTag: ae409e55-d71a-4e94-a2c5-35d95cab9dc1
+
+	column 'ID fornecedor'
+		dataType: string
+		isHidden
+		lineageTag: a89a4b98-4ead-448c-a6e2-18d1eca44fdc
+		sourceColumn: ID fornecedor
+
+	column Fornecedor
+		dataType: string
+		lineageTag: 30b197c2-d72b-42cd-a3b5-96aa7a462912
+		sourceColumn: Fornecedor
+
+	column Categoria
+		dataType: string
+		lineageTag: 4c27b652-6e45-409e-aa47-e6d456b41e37
+		sourceColumn: Categoria
+
+	partition Fornecedores = m
+		mode: import
+		source =
+				let
+				    Fonte = LerCsv("fornecedores.csv"),
+				    Nomes = Table.RenameColumns(Fonte, {{"fornecedor_id", "ID fornecedor"}, {"nome", "Fornecedor"}, {"categoria", "Categoria"}})
+				in
+				    Nomes
+

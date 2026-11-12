@@ -1,0 +1,75 @@
+/// Uma linha por parcela de venda. Data recebimento vazia = em aberto; Valor recebido 0 = baixada como perda.
+/// Inclui a carteira inicial (emissões de out-dez/2022), que não tem data no Calendário.
+table 'Títulos a receber'
+	lineageTag: af60e271-bb5f-4c8b-8292-f5fadfa8332d
+
+	column 'ID título'
+		dataType: string
+		isHidden
+		lineageTag: b4ed7d03-b468-4915-8b3b-5e50584a14f3
+		sourceColumn: ID título
+
+	column 'ID cliente'
+		dataType: string
+		isHidden
+		lineageTag: 8df1ca37-422e-44ca-b471-62a431dfe8c5
+		sourceColumn: ID cliente
+
+	column 'Data emissão'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 3ddf7ff6-a4a6-40cc-b77b-f2866231fb99
+		summarizeBy: none
+		sourceColumn: Data emissão
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data vencimento'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: c7a07e57-6b6f-4866-8698-2aa247ccc81b
+		summarizeBy: none
+		sourceColumn: Data vencimento
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data recebimento'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: c56002d5-c9d0-4875-bb5b-61cf93dc5e37
+		summarizeBy: none
+		sourceColumn: Data recebimento
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Valor
+		dataType: decimal
+		isHidden
+		formatString: "R$" #,0.00
+		lineageTag: 097b089e-384e-4f8a-bbf1-9b9e3578788f
+		sourceColumn: Valor
+
+	column 'Valor recebido'
+		dataType: decimal
+		isHidden
+		formatString: "R$" #,0.00
+		lineageTag: c89592c6-52b9-429b-96bd-93a377b01177
+		sourceColumn: Valor recebido
+
+	partition 'Títulos a receber' = m
+		mode: import
+		source =
+				let
+				    Fonte = LerCsv("titulos_receber.csv"),
+				    Vazios = Table.ReplaceValue(Fonte, "", null, Replacer.ReplaceValue, {"data_recebimento", "valor_recebido"}),
+				    Tipos = Table.TransformColumnTypes(Vazios, {{"data_emissao", type date}, {"data_vencimento", type date}, {"data_recebimento", type date}, {"valor", Currency.Type}, {"valor_recebido", Currency.Type}}, "en-US"),
+				    Nomes = Table.RenameColumns(Tipos, {{"titulo_id", "ID título"}, {"cliente_id", "ID cliente"}, {"data_emissao", "Data emissão"}, {"data_vencimento", "Data vencimento"}, {"data_recebimento", "Data recebimento"}, {"valor", "Valor"}, {"valor_recebido", "Valor recebido"}})
+				in
+				    Nomes
+

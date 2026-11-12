@@ -1,0 +1,66 @@
+/// Tabela de datas, jan/2023 a dez/2025 (marcada como tabela de datas).
+table Calendário
+	lineageTag: f72c9e8e-2331-44a2-8db4-dde33256122a
+	dataCategory: Time
+
+	column Data
+		dataType: dateTime
+		isUnique
+		isKey
+		formatString: dd/mm/yyyy
+		lineageTag: c825337e-cb33-4892-886b-c9492f839efa
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ano
+		dataType: int64
+		lineageTag: 4b67ac42-1cb6-4c46-af9d-24f4fe2d9858
+		summarizeBy: none
+		sourceColumn: Ano
+
+	column 'Mês nº'
+		dataType: int64
+		isHidden
+		lineageTag: 36b20b87-dfca-4d76-972b-13434c2c020f
+		summarizeBy: none
+		sourceColumn: Mês nº
+
+	column Mês
+		dataType: string
+		lineageTag: e7e69daf-c37a-4424-9c53-b06bc610dde7
+		sourceColumn: Mês
+		sortByColumn: 'Mês nº'
+
+	column Ano-mês
+		dataType: string
+		lineageTag: 0b6bbf33-8c5a-4459-9877-41825cd339a3
+		sourceColumn: Ano-mês
+		sortByColumn: 'Ano-mês nº'
+
+	column 'Ano-mês nº'
+		dataType: int64
+		isHidden
+		lineageTag: e6cf5fb7-aa31-4aaa-add9-207294a34f56
+		summarizeBy: none
+		sourceColumn: Ano-mês nº
+
+	partition Calendário = m
+		mode: import
+		source =
+				let
+				    Inicio = #date(2023, 1, 1),
+				    Fim = #date(2025, 12, 31),
+				    Datas = List.Dates(Inicio, Duration.Days(Fim - Inicio) + 1, #duration(1, 0, 0, 0)),
+				    Tabela = Table.FromList(Datas, Splitter.SplitByNothing(), type table [Data = date]),
+				    Ano = Table.AddColumn(Tabela, "Ano", each Date.Year([Data]), Int64.Type),
+				    MesNum = Table.AddColumn(Ano, "Mês nº", each Date.Month([Data]), Int64.Type),
+				    Mes = Table.AddColumn(MesNum, "Mês", each Date.ToText([Data], [Format = "MMM", Culture = "pt-BR"]), type text),
+				    AnoMes = Table.AddColumn(Mes, "Ano-mês", each Date.ToText([Data], [Format = "MMM/yy", Culture = "pt-BR"]), type text),
+				    AnoMesNum = Table.AddColumn(AnoMes, "Ano-mês nº", each Date.Year([Data]) * 100 + Date.Month([Data]), Int64.Type)
+				in
+				    AnoMesNum
+

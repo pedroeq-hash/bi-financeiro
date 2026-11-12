@@ -1,0 +1,293 @@
+/// Tabela só para guardar as medidas.
+table _Medidas
+	lineageTag: 8dd6d647-d2c5-4461-82f6-be7fb2d699c7
+
+	/// Soma dos lançamentos com sinal (receita +, custos e despesas −). Base de toda a DRE.
+	measure Resultado = SUM('Lançamentos'[Valor])
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: 84460848-b8f2-41fc-ac1a-0c5a982eac26
+
+	measure 'Receita bruta' = CALCULATE([Resultado], 'Plano de contas'[Ordem DRE] = 1)
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: ae7f9466-d454-43be-880a-6d54b60c9ad8
+
+	/// Subtotal: soma dos grupos que vêm antes na DRE (os valores já têm sinal).
+	measure 'Receita líquida' = CALCULATE([Resultado], 'Plano de contas'[Ordem DRE] < 3)
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: 3effad2a-b685-47d4-8852-c70abba27554
+
+	measure 'Lucro bruto' = CALCULATE([Resultado], 'Plano de contas'[Ordem DRE] < 5)
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: 4087bcdc-4895-4bd8-8f30-1afb21b9f934
+
+	measure EBITDA = CALCULATE([Resultado], 'Plano de contas'[Ordem DRE] < 9)
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: dde26bcb-fddc-4313-811c-fc38613fc1c4
+
+	measure 'Lucro líquido' = CALCULATE([Resultado], 'Plano de contas'[Ordem DRE] < 14)
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: 10851d5a-3281-4b1f-a9b4-dc5f28356a0f
+
+	measure '% Margem bruta' = DIVIDE([Lucro bruto], [Receita líquida])
+		formatString: 0.0%
+		displayFolder: Resultado
+		lineageTag: 9a542fa4-24d8-49e8-92f4-cb415d46e518
+
+	measure '% Margem EBITDA' = DIVIDE([EBITDA], [Receita líquida])
+		formatString: 0.0%
+		displayFolder: Resultado
+		lineageTag: cc21bf04-0160-4bf2-911c-2676e185ef25
+
+	measure '% Margem líquida' = DIVIDE([Lucro líquido], [Receita líquida])
+		formatString: 0.0%
+		displayFolder: Resultado
+		lineageTag: 78bf9317-26c7-4914-a9ca-9185c9d5af5b
+
+	/// Valor de cada linha da matriz da DRE: grupo = contas daquele grupo; subtotal = todos os grupos acima dele.
+	measure 'Valor DRE' =
+			VAR _ordem = SELECTEDVALUE('Linhas DRE'[Ordem])
+			RETURN
+			    SWITCH(
+			        SELECTEDVALUE('Linhas DRE'[Tipo]),
+			        "Grupo", CALCULATE([Resultado], 'Plano de contas'[Ordem DRE] = _ordem),
+			        "Subtotal", CALCULATE([Resultado], 'Plano de contas'[Ordem DRE] < _ordem)
+			    )
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: 561433e5-fba1-4ea4-a0a1-d18923562325
+
+	/// Análise vertical: cada linha da DRE sobre a receita líquida.
+	measure '% da receita líquida' = DIVIDE([Valor DRE], [Receita líquida])
+		formatString: 0.0%
+		displayFolder: Resultado
+		lineageTag: 23bb1ae5-971d-4038-bab9-01e6933519e8
+
+	measure 'Receita líquida ano anterior' = CALCULATE([Receita líquida], SAMEPERIODLASTYEAR('Calendário'[Data]))
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: 2787297f-bcdc-44cb-b757-b211cd293937
+
+	measure '% Var. receita a/a' = DIVIDE([Receita líquida] - [Receita líquida ano anterior], [Receita líquida ano anterior])
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Resultado
+		lineageTag: 19c62f69-9ba5-4fd7-ad01-c8ebf7c1a6df
+
+	measure 'Receita líquida YTD' = TOTALYTD([Receita líquida], 'Calendário'[Data])
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: 8036b380-629e-470a-9f4b-1ffa85cc777c
+
+	/// Receita dos 12 meses que terminam no último dia do contexto (tira a sazonalidade da série).
+	measure 'Receita líquida 12m' = CALCULATE([Receita líquida], DATESINPERIOD('Calendário'[Data], MAX('Calendário'[Data]), -12, MONTH))
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: 601585bb-af88-47f6-bc3e-9c34b34b0b8b
+
+	measure 'Lucro líquido ano anterior' = CALCULATE([Lucro líquido], SAMEPERIODLASTYEAR('Calendário'[Data]))
+		formatString: "R$" #,0
+		displayFolder: Resultado
+		lineageTag: b1187a87-672d-405b-be91-10235e45e973
+
+	measure '% Var. lucro a/a' = DIVIDE([Lucro líquido] - [Lucro líquido ano anterior], ABS([Lucro líquido ano anterior]))
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Resultado
+		lineageTag: d7636b37-e446-4563-88a7-26e627eb3019
+
+	measure Orçado = SUM('Orçamento'[Valor orçado])
+		formatString: "R$" #,0
+		displayFolder: Orçamento
+		lineageTag: 07439ebd-9a92-4678-9255-5f2dd8dd8d38
+
+	/// Mesma lógica de Valor DRE, sobre o orçamento.
+	measure 'Orçado DRE' =
+			VAR _ordem = SELECTEDVALUE('Linhas DRE'[Ordem])
+			RETURN
+			    SWITCH(
+			        SELECTEDVALUE('Linhas DRE'[Tipo]),
+			        "Grupo", CALCULATE([Orçado], 'Plano de contas'[Ordem DRE] = _ordem),
+			        "Subtotal", CALCULATE([Orçado], 'Plano de contas'[Ordem DRE] < _ordem)
+			    )
+		formatString: "R$" #,0
+		displayFolder: Orçamento
+		lineageTag: caab6fc7-cc9f-4be8-be9e-7b5a298a2397
+
+	/// Realizado ÷ orçado. Para despesas, acima de 100% é estouro.
+	measure 'Realizado x orçado %' = DIVIDE([Valor DRE], [Orçado DRE])
+		formatString: 0%
+		displayFolder: Orçamento
+		lineageTag: b43af1c2-68f7-4171-9979-ea708c0278ed
+
+	/// Positivo = melhor que o orçado em qualquer linha (os valores têm sinal).
+	measure 'Var. vs orçado' = [Valor DRE] - [Orçado DRE]
+		formatString: "R$" #,0
+		displayFolder: Orçamento
+		lineageTag: ca342203-2194-4c59-9a03-6518dfa14143
+
+	measure 'Saldo inicial' = SUM('Saldo inicial'[Saldo])
+		formatString: "R$" #,0
+		displayFolder: Caixa
+		lineageTag: eb201c4e-87ff-484c-ba25-8e5bb33dfd55
+
+	/// Recebimentos pela data de baixa (perdas entram com 0). O filtro Calendário deixa de fora as baixas de 2022.
+	measure Entradas =
+			CALCULATE(
+			    SUM('Títulos a receber'[Valor recebido]),
+			    USERELATIONSHIP('Títulos a receber'[Data recebimento], 'Calendário'[Data]),
+			    'Calendário'
+			)
+		formatString: "R$" #,0
+		displayFolder: Caixa
+		lineageTag: d841e6df-5950-4fb8-a92e-ea5adbb08ec1
+
+	/// Pagamentos pela data de baixa, inclusive juros e distribuição de lucros aos sócios.
+	measure Saídas =
+			CALCULATE(
+			    SUM('Títulos a pagar'[Valor]),
+			    USERELATIONSHIP('Títulos a pagar'[Data pagamento], 'Calendário'[Data]),
+			    'Calendário'
+			)
+		formatString: "R$" #,0
+		displayFolder: Caixa
+		lineageTag: da038d87-af44-431a-a9a2-0a07b994a2e9
+
+	measure 'Geração de caixa' = [Entradas] - [Saídas]
+		formatString: "R$" #,0
+		displayFolder: Caixa
+		lineageTag: cc795dd2-e5a9-4658-9efa-fe60ff133810
+
+	/// Saldo inicial + tudo o que entrou e saiu até o último dia do contexto.
+	measure 'Saldo de caixa' =
+			VAR _ref = MAX('Calendário'[Data])
+			RETURN
+			    IF(
+			        NOT ISBLANK(_ref),
+			        [Saldo inicial]
+			            + CALCULATE([Geração de caixa], REMOVEFILTERS('Calendário'), 'Calendário'[Data] <= _ref)
+			    )
+		formatString: "R$" #,0
+		displayFolder: Caixa
+		lineageTag: 36749ff6-421a-4671-8c24-ac08a8eede2e
+
+	/// "Hoje" do relatório: último dia do período filtrado. Nunca TODAY(): os dados vão só até 2025.
+	measure 'Data de referência' = MAX('Calendário'[Data])
+		formatString: dd/mm/yyyy
+		displayFolder: Capital de giro
+		lineageTag: 726a08ea-64ad-49a2-80a2-81489608b577
+
+	/// Títulos emitidos até a data de referência e ainda não baixados nela (nem recebidos nem perdidos).
+	measure 'A receber' =
+			VAR _ref = [Data de referência]
+			RETURN
+			    CALCULATE(
+			        SUM('Títulos a receber'[Valor]),
+			        REMOVEFILTERS('Calendário'),
+			        'Títulos a receber'[Data emissão] <= _ref,
+			        'Títulos a receber'[Data recebimento] > _ref || ISBLANK('Títulos a receber'[Data recebimento])
+			    )
+		formatString: "R$" #,0
+		displayFolder: Capital de giro
+		lineageTag: e9980f7c-ad45-47e7-b36d-4b892273245f
+
+	measure 'Vendas 90 dias' =
+			VAR _ref = [Data de referência]
+			RETURN
+			    CALCULATE(
+			        SUM('Títulos a receber'[Valor]),
+			        REMOVEFILTERS('Calendário'),
+			        'Títulos a receber'[Data emissão] > _ref - 90,
+			        'Títulos a receber'[Data emissão] <= _ref
+			    )
+		formatString: "R$" #,0
+		displayFolder: Capital de giro
+		lineageTag: 7e58d401-a7db-471c-a123-e4e4e4ddb928
+
+	/// Prazo médio de recebimento: quantos dias de venda estão a receber.
+	measure PMR = DIVIDE([A receber], [Vendas 90 dias]) * 90
+		formatString: 0
+		displayFolder: Capital de giro
+		lineageTag: ac6ccc17-60ab-4241-aeed-7115ca061bf8
+
+	/// Só fornecedores de mercadoria: despesas, impostos e sócios não entram no PMP.
+	measure 'A pagar a fornecedores' =
+			VAR _ref = [Data de referência]
+			RETURN
+			    CALCULATE(
+			        SUM('Títulos a pagar'[Valor]),
+			        REMOVEFILTERS('Calendário'),
+			        Fornecedores[Categoria] = "Mercadorias",
+			        'Títulos a pagar'[Data emissão] <= _ref,
+			        'Títulos a pagar'[Data pagamento] > _ref || ISBLANK('Títulos a pagar'[Data pagamento])
+			    )
+		formatString: "R$" #,0
+		displayFolder: Capital de giro
+		lineageTag: b68de0f1-71cd-4a7d-8f2f-bda1069f95bc
+
+	measure 'Compras 90 dias' =
+			VAR _ref = [Data de referência]
+			RETURN
+			    CALCULATE(
+			        SUM('Títulos a pagar'[Valor]),
+			        REMOVEFILTERS('Calendário'),
+			        Fornecedores[Categoria] = "Mercadorias",
+			        'Títulos a pagar'[Data emissão] > _ref - 90,
+			        'Títulos a pagar'[Data emissão] <= _ref
+			    )
+		formatString: "R$" #,0
+		displayFolder: Capital de giro
+		lineageTag: 4d581501-9935-41c6-b003-82911fc428b4
+
+	/// Prazo médio de pagamento a fornecedores de mercadoria.
+	measure PMP = DIVIDE([A pagar a fornecedores], [Compras 90 dias]) * 90
+		formatString: 0
+		displayFolder: Capital de giro
+		lineageTag: 97b3da1b-61e4-4be6-80f6-a2eadc3a6f83
+
+	/// Dias que a empresa financia o cliente com dinheiro próprio (sem estoque no modelo: PMR − PMP).
+	measure 'Ciclo financeiro' = [PMR] - [PMP]
+		formatString: 0
+		displayFolder: Capital de giro
+		lineageTag: aa70a8ce-f1db-44bb-b691-292b25741947
+
+	measure 'Vencido 90+' =
+			VAR _ref = [Data de referência]
+			RETURN CALCULATE([A receber], 'Títulos a receber'[Data vencimento] < _ref - 90)
+		formatString: "R$" #,0
+		displayFolder: Capital de giro
+		lineageTag: 419902ac-f818-48ed-8fef-5595280f05a3
+
+	measure '% Inadimplência 90+' = DIVIDE([Vencido 90+], [A receber])
+		formatString: 0.0%
+		displayFolder: Capital de giro
+		lineageTag: cdac2365-a6df-4d92-8487-97e3f96794c2
+
+	/// Aging: saldo a receber cujos dias de atraso caem na faixa (tabela Faixas de aging, desconectada).
+	measure 'A receber por faixa' =
+			VAR _ref = [Data de referência]
+			VAR _de = MIN('Faixas de aging'[Dias de])
+			VAR _ate = MAX('Faixas de aging'[Dias até])
+			RETURN
+			    CALCULATE(
+			        [A receber],
+			        'Títulos a receber'[Data vencimento] >= _ref - _ate,
+			        'Títulos a receber'[Data vencimento] <= _ref - _de
+			    )
+		formatString: "R$" #,0
+		displayFolder: Capital de giro
+		lineageTag: 549d869d-8eb3-4ac8-82aa-00a574c4ffe1
+
+	column x
+		isHidden
+		lineageTag: 070175e1-43e5-4c97-96cd-4dceda059786
+		isNameInferred
+		sourceColumn: [x]
+
+	partition _Medidas = calculated
+		mode: import
+		source = ROW("x", BLANK())
+

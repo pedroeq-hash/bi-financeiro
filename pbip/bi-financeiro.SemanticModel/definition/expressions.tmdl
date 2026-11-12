@@ -1,0 +1,18 @@
+/// Pasta com os CSVs gerados por gerador/gerar_dados.py (termina com \). Troque ao clonar o repositório.
+expression PastaDados = "C:\codes\bis\bi-financeiro\data\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: a4599062-5c66-4aee-afee-e2e1d65a9992
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+/// Lê um CSV da pasta PastaDados (UTF-8, campos entre aspas) e promove o cabeçalho.
+expression LerCsv =
+		(arquivo as text) as table =>
+		    let
+		        Fonte = Csv.Document(File.Contents(PastaDados & arquivo), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+		        Cabecalho = Table.PromoteHeaders(Fonte, [PromoteAllScalars = true])
+		    in
+		        Cabecalho
+	lineageTag: e2e27b78-5525-4207-96be-90cca98da4ad
+

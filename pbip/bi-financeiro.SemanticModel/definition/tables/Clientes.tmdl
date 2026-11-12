@@ -1,0 +1,41 @@
+/// Clientes fictícios. "Construtora pequena" é o segmento novo, que só compra a partir de jul/2024.
+table Clientes
+	lineageTag: 0468ceaf-8e56-4737-a6a9-e717038b32f5
+
+	column 'ID cliente'
+		dataType: string
+		isHidden
+		lineageTag: 80899a5c-14f1-4fb2-a68a-2c1eb5d44046
+		sourceColumn: ID cliente
+
+	column Cliente
+		dataType: string
+		lineageTag: dfa04a3a-aef2-4593-a262-5565241bc2d3
+		sourceColumn: Cliente
+
+	column Segmento
+		dataType: string
+		lineageTag: f417ae9d-cfc5-47e0-a68c-5e9f9ed67833
+		sourceColumn: Segmento
+
+	column UF
+		dataType: string
+		lineageTag: 75aa16bf-f626-4618-9958-15352ac1261e
+		dataCategory: StateOrProvince
+		sourceColumn: UF
+
+	column Cidade
+		dataType: string
+		lineageTag: 3f4fa28f-1862-4806-b175-1a5ce28aa8ca
+		dataCategory: City
+		sourceColumn: Cidade
+
+	partition Clientes = m
+		mode: import
+		source =
+				let
+				    Fonte = LerCsv("clientes.csv"),
+				    Nomes = Table.RenameColumns(Fonte, {{"cliente_id", "ID cliente"}, {"nome", "Cliente"}, {"segmento", "Segmento"}, {"uf", "UF"}, {"cidade", "Cidade"}})
+				in
+				    Nomes
+

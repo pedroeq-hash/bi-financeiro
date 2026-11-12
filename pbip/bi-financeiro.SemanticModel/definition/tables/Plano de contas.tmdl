@@ -1,0 +1,40 @@
+/// Uma linha por conta. Ordem DRE é a posição do grupo na DRE (os buracos 3, 5, 9, 12 e 14 são os subtotais).
+table 'Plano de contas'
+	lineageTag: df799802-e8fb-441b-b1a4-5a8029b73525
+
+	column 'ID conta'
+		dataType: int64
+		isHidden
+		lineageTag: cfc3aaa0-8726-4075-a5ea-c393f5d6b3f8
+		summarizeBy: none
+		sourceColumn: ID conta
+
+	column Conta
+		dataType: string
+		lineageTag: 8c2f8596-483d-42f3-b7e3-7df5610e8452
+		sourceColumn: Conta
+		sortByColumn: 'ID conta'
+
+	column 'Grupo DRE'
+		dataType: string
+		lineageTag: 44159585-da7b-49f3-81cb-d4bb4e18c98c
+		sourceColumn: Grupo DRE
+		sortByColumn: 'Ordem DRE'
+
+	column 'Ordem DRE'
+		dataType: int64
+		isHidden
+		lineageTag: 9f528f20-8774-4520-a12b-ac6abf518d72
+		summarizeBy: none
+		sourceColumn: Ordem DRE
+
+	partition 'Plano de contas' = m
+		mode: import
+		source =
+				let
+				    Fonte = LerCsv("plano_contas.csv"),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"conta_id", Int64.Type}, {"ordem_dre", Int64.Type}}, "en-US"),
+				    Nomes = Table.RenameColumns(Tipos, {{"conta_id", "ID conta"}, {"conta", "Conta"}, {"grupo_dre", "Grupo DRE"}, {"ordem_dre", "Ordem DRE"}})
+				in
+				    Nomes
+

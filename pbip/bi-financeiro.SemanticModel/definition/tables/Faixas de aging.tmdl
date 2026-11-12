@@ -1,0 +1,49 @@
+/// Faixas de dias de atraso para o aging dos títulos a receber (tabela desconectada, usada pela medida A receber por faixa).
+table 'Faixas de aging'
+	lineageTag: 7920f273-cf1e-43bb-b1ff-5b257cfef378
+
+	column Ordem
+		dataType: int64
+		isHidden
+		lineageTag: 4c4389e0-669c-4221-b9ab-dc9a9d92e8f3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ordem]
+
+	column Faixa
+		dataType: string
+		lineageTag: 80f8f1db-5dda-462b-bad0-17966d9d210e
+		isNameInferred
+		sourceColumn: [Faixa]
+		sortByColumn: Ordem
+
+	column 'Dias de'
+		dataType: int64
+		isHidden
+		lineageTag: c9f193f5-6227-4d9b-8ecb-db1f220ac16d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Dias de]
+
+	column 'Dias até'
+		dataType: int64
+		isHidden
+		lineageTag: c2181c07-e992-4a34-8965-8f9f068d217e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Dias até]
+
+	partition 'Faixas de aging' = calculated
+		mode: import
+		source =
+				DATATABLE(
+				    "Ordem", INTEGER, "Faixa", STRING, "Dias de", INTEGER, "Dias até", INTEGER,
+				    {
+				        {1, "A vencer", -9999, 0},
+				        {2, "1–30 dias", 1, 30},
+				        {3, "31–60 dias", 31, 60},
+				        {4, "61–90 dias", 61, 90},
+				        {5, "Mais de 90 dias", 91, 9999}
+				    }
+				)
+

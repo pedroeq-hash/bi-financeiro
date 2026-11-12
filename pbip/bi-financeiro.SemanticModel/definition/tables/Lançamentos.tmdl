@@ -1,0 +1,40 @@
+/// Fato da DRE (regime de competência). Valor com sinal: receita positiva, custos e despesas negativos.
+table Lançamentos
+	lineageTag: 75f0d2bf-6a14-4dba-9055-e130603a765b
+
+	column Data
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: d6d29dca-f7de-4a2a-9a3e-2bcbac32b0ed
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID conta'
+		dataType: int64
+		isHidden
+		lineageTag: 74e9c699-1c0a-4936-b31a-fbe00fd4999c
+		summarizeBy: none
+		sourceColumn: ID conta
+
+	column Valor
+		dataType: decimal
+		isHidden
+		formatString: "R$" #,0.00
+		lineageTag: d6abc7cf-8007-40c2-b3c1-721403b76263
+		sourceColumn: Valor
+
+	partition Lançamentos = m
+		mode: import
+		source =
+				let
+				    Fonte = LerCsv("lancamentos.csv"),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"data_competencia", type date}, {"conta_id", Int64.Type}, {"valor", Currency.Type}}, "en-US"),
+				    Nomes = Table.RenameColumns(Tipos, {{"data_competencia", "Data"}, {"conta_id", "ID conta"}, {"valor", "Valor"}})
+				in
+				    Nomes
+
