@@ -1,0 +1,12 @@
+# Dados gerados: rodar gerador/gerar_dados.py (ver README)
+data/
+
+# Arquivos locais do Power BI Project
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# Versão binária: o projeto é versionado como .pbip
+*.pbix
+
+# Cache do Python
+__pycache__/

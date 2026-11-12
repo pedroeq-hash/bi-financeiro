@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "bi-financeiro"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "b3ee91b1-5e98-4cd1-ba96-c4fc95fa04cf"
+  }
+}
