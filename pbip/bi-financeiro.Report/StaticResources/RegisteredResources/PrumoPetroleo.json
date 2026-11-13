@@ -1,0 +1,78 @@
+{
+  "name": "Prumo Petróleo (escuro)",
+  "dataColors": [
+    "#5EC4D3",
+    "#F59E0B",
+    "#F87171",
+    "#FCD34D",
+    "#1F7A8C",
+    "#FB923C",
+    "#9FB3B8",
+    "#FFFFFF"
+  ],
+  "background": "#193238",
+  "foreground": "#FFFFFF",
+  "tableAccent": "#F59E0B",
+  "good": "#5EC4D3",
+  "neutral": "#9FB3B8",
+  "bad": "#F87171",
+  "maximum": "#F87171",
+  "center": "#FCD34D",
+  "minimum": "#193238",
+  "textClasses": {
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 28,
+      "color": "#FFFFFF"
+    },
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#FFFFFF"
+    },
+    "header": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#FFFFFF"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10,
+      "color": "#9FB3B8"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": false
+          }
+        ],
+        "border": [
+          {
+            "show": false
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": false
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "outspace": [
+          {
+            "color": {
+              "solid": {
+                "color": "#081A1F"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

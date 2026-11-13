@@ -1,0 +1,272 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "name": "prazos",
+  "position": {
+    "x": 602,
+    "y": 236,
+    "z": 20,
+    "height": 452,
+    "width": 642,
+    "tabOrder": 20
+  },
+  "visual": {
+    "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+    "query": {
+      "queryState": {
+        "dataset": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Calendário"
+                    }
+                  },
+                  "Property": "Ano-mês"
+                }
+              },
+              "queryRef": "Calendário.Ano-mês",
+              "nativeQueryRef": "Ano-mês"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Calendário"
+                    }
+                  },
+                  "Property": "Ano-mês nº"
+                }
+              },
+              "queryRef": "Calendário.Ano-mês nº",
+              "nativeQueryRef": "Ano-mês nº"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "PMR"
+                }
+              },
+              "queryRef": "_Medidas.PMR",
+              "nativeQueryRef": "PMR"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "PMP"
+                }
+              },
+              "queryRef": "_Medidas.PMP",
+              "nativeQueryRef": "PMP"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "vega": [
+        {
+          "properties": {
+            "jsonSpec": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\"$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\", \"data\": {\"name\": \"dataset\"}, \"padding\": {\"left\": 6, \"right\": 64, \"top\": 6, \"bottom\": 6}, \"transform\": [{\"joinaggregate\": [{\"op\": \"max\", \"field\": \"Ano-mês nº\", \"as\": \"ultimo\"}]}], \"layer\": [{\"mark\": {\"type\": \"area\", \"interpolate\": \"monotone\", \"color\": \"rgba(94,196,211,0.14)\"}, \"encoding\": {\"x\": {\"field\": \"Ano-mês nº\", \"type\": \"ordinal\", \"title\": null, \"axis\": {\"labelAngle\": 0, \"labelExpr\": \"datum.value % 100 % 3 == 1 ? [''jan'',''fev'',''mar'',''abr'',''mai'',''jun'',''jul'',''ago'',''set'',''out'',''nov'',''dez''][datum.value % 100 - 1] + ''/'' + floor(datum.value / 100) % 100 : ''''\"}}, \"y\": {\"field\": \"PMP\", \"type\": \"quantitative\", \"title\": null, \"axis\": {\"grid\": true, \"tickCount\": 5}}, \"y2\": {\"field\": \"PMR\"}}}, {\"mark\": {\"type\": \"line\", \"interpolate\": \"monotone\", \"color\": \"#5EC4D3\", \"strokeWidth\": 2.5}, \"encoding\": {\"x\": {\"field\": \"Ano-mês nº\", \"type\": \"ordinal\", \"title\": null, \"axis\": {\"labelAngle\": 0, \"labelExpr\": \"datum.value % 100 % 3 == 1 ? [''jan'',''fev'',''mar'',''abr'',''mai'',''jun'',''jul'',''ago'',''set'',''out'',''nov'',''dez''][datum.value % 100 - 1] + ''/'' + floor(datum.value / 100) % 100 : ''''\"}}, \"y\": {\"field\": \"PMR\", \"type\": \"quantitative\"}, \"tooltip\": [{\"field\": \"Ano-mês\", \"title\": \"Mês\"}, {\"field\": \"PMR\", \"format\": \"0\", \"formatType\": \"pbiFormat\"}, {\"field\": \"PMP\", \"format\": \"0\", \"formatType\": \"pbiFormat\"}]}}, {\"mark\": {\"type\": \"line\", \"interpolate\": \"monotone\", \"color\": \"#F59E0B\", \"strokeWidth\": 2.5}, \"encoding\": {\"x\": {\"field\": \"Ano-mês nº\", \"type\": \"ordinal\", \"title\": null, \"axis\": {\"labelAngle\": 0, \"labelExpr\": \"datum.value % 100 % 3 == 1 ? [''jan'',''fev'',''mar'',''abr'',''mai'',''jun'',''jul'',''ago'',''set'',''out'',''nov'',''dez''][datum.value % 100 - 1] + ''/'' + floor(datum.value / 100) % 100 : ''''\"}}, \"y\": {\"field\": \"PMP\", \"type\": \"quantitative\"}}}, {\"transform\": [{\"filter\": \"datum[''Ano-mês nº''] == datum.ultimo\"}, {\"calculate\": \"''PMR '' + format(datum[''PMR''], ''.0f'')\", \"as\": \"t\"}], \"mark\": {\"type\": \"text\", \"align\": \"left\", \"dx\": 6, \"fontSize\": 12, \"fontWeight\": \"bold\", \"color\": \"#5EC4D3\"}, \"encoding\": {\"x\": {\"field\": \"Ano-mês nº\", \"type\": \"ordinal\", \"title\": null, \"axis\": {\"labelAngle\": 0, \"labelExpr\": \"datum.value % 100 % 3 == 1 ? [''jan'',''fev'',''mar'',''abr'',''mai'',''jun'',''jul'',''ago'',''set'',''out'',''nov'',''dez''][datum.value % 100 - 1] + ''/'' + floor(datum.value / 100) % 100 : ''''\"}}, \"y\": {\"field\": \"PMR\", \"type\": \"quantitative\"}, \"text\": {\"field\": \"t\"}}}, {\"transform\": [{\"filter\": \"datum[''Ano-mês nº''] == datum.ultimo\"}, {\"calculate\": \"''PMP '' + format(datum[''PMP''], ''.0f'')\", \"as\": \"t\"}], \"mark\": {\"type\": \"text\", \"align\": \"left\", \"dx\": 6, \"fontSize\": 12, \"fontWeight\": \"bold\", \"color\": \"#F59E0B\"}, \"encoding\": {\"x\": {\"field\": \"Ano-mês nº\", \"type\": \"ordinal\", \"title\": null, \"axis\": {\"labelAngle\": 0, \"labelExpr\": \"datum.value % 100 % 3 == 1 ? [''jan'',''fev'',''mar'',''abr'',''mai'',''jun'',''jul'',''ago'',''set'',''out'',''nov'',''dez''][datum.value % 100 - 1] + ''/'' + floor(datum.value / 100) % 100 : ''''\"}}, \"y\": {\"field\": \"PMP\", \"type\": \"quantitative\"}, \"text\": {\"field\": \"t\"}}}, {\"data\": {\"values\": [{\"m\": 202407}]}, \"layer\": [{\"mark\": {\"type\": \"rule\", \"strokeDash\": [4, 3], \"color\": \"#9FB3B8\"}, \"encoding\": {\"x\": {\"field\": \"m\", \"type\": \"ordinal\", \"bandPosition\": 0}}}, {\"mark\": {\"type\": \"text\", \"align\": \"right\", \"baseline\": \"bottom\", \"dx\": -6, \"y\": {\"expr\": \"height - 2\"}, \"fontSize\": 11, \"color\": \"#9FB3B8\", \"text\": \"jul/24: prazo longo + segmento novo →\"}, \"encoding\": {\"x\": {\"field\": \"m\", \"type\": \"ordinal\", \"bandPosition\": 0}}}]}, {\"data\": {\"values\": [{}]}, \"mark\": {\"type\": \"text\", \"align\": \"left\", \"baseline\": \"top\", \"fontSize\": 11, \"fontWeight\": \"bold\", \"color\": \"#5EC4D3\", \"text\": \"■ ciclo financeiro (PMR − PMP)\", \"x\": {\"expr\": \"width - 214\"}, \"y\": 0}}]}'"
+                }
+              }
+            },
+            "jsonConfig": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\"autosize\": {\"type\": \"fit\", \"contains\": \"padding\"}, \"background\": \"transparent\", \"padding\": 6, \"view\": {\"stroke\": \"transparent\"}, \"font\": \"Segoe UI\", \"axis\": {\"labelColor\": \"#B9CBCF\", \"labelFontSize\": 11, \"domain\": false, \"ticks\": false, \"grid\": false, \"labelPadding\": 6, \"title\": null, \"gridColor\": \"rgba(255,255,255,0.08)\"}, \"text\": {\"fontSize\": 11, \"color\": \"#FFFFFF\"}, \"tooltip\": {\"fontSize\": 12}}'"
+                }
+              }
+            },
+            "provider": {
+              "expr": {
+                "Literal": {
+                  "Value": "'vegaLite'"
+                }
+              }
+            },
+            "renderMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'svg'"
+                }
+              }
+            },
+            "enableTooltips": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "enableContextMenu": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "enableSelection": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableHighlight": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'6.4.3'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stateManagement": [
+        {
+          "properties": {
+            "viewportHeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "442D"
+                }
+              }
+            },
+            "viewportWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "632D"
+                }
+              }
+            },
+            "supportFieldConfiguration": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\"Ano-mês\": {\"highlight\": false, \"highlightStatus\": false, \"highlightComparator\": false, \"format\": false, \"formatted\": false, \"names\": false}, \"Ano-mês nº\": {\"highlight\": false, \"highlightStatus\": false, \"highlightComparator\": false, \"format\": false, \"formatted\": false, \"names\": false}, \"PMR\": {\"highlight\": false, \"highlightStatus\": false, \"highlightComparator\": false, \"format\": true, \"formatted\": true, \"names\": false}, \"PMP\": {\"highlight\": false, \"highlightStatus\": false, \"highlightComparator\": false, \"format\": true, \"formatted\": true, \"names\": false}}'"
+                }
+              }
+            },
+            "denebMetaVersion": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2'"
+                }
+              }
+            },
+            "consolidateFieldParameters": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "developer": [
+        {
+          "properties": {
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2.0.1.0'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

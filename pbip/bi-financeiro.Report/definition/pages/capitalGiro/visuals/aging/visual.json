@@ -1,0 +1,258 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "name": "aging",
+  "position": {
+    "x": 226,
+    "y": 500,
+    "z": 30,
+    "height": 188,
+    "width": 336,
+    "tabOrder": 30
+  },
+  "visual": {
+    "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+    "query": {
+      "queryState": {
+        "dataset": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Faixas de aging"
+                    }
+                  },
+                  "Property": "Faixa"
+                }
+              },
+              "queryRef": "Faixas de aging.Faixa",
+              "nativeQueryRef": "Faixa"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Faixas de aging"
+                    }
+                  },
+                  "Property": "Ordem"
+                }
+              },
+              "queryRef": "Faixas de aging.Ordem",
+              "nativeQueryRef": "Ordem"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "A receber por faixa"
+                }
+              },
+              "queryRef": "_Medidas.A receber por faixa",
+              "nativeQueryRef": "A receber por faixa"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "vega": [
+        {
+          "properties": {
+            "jsonSpec": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\"$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\", \"data\": {\"name\": \"dataset\"}, \"transform\": [{\"joinaggregate\": [{\"op\": \"sum\", \"field\": \"A receber por faixa\", \"as\": \"total\"}]}, {\"calculate\": \"pbiFormat(datum[''A receber por faixa''] / 1000, ''#,0'') + '' mil''\", \"as\": \"rotulo\"}, {\"calculate\": \"pbiFormat(datum[''A receber por faixa''] / datum.total, ''0.0%'')\", \"as\": \"parte\"}], \"encoding\": {\"x\": {\"field\": \"Faixa\", \"type\": \"nominal\", \"sort\": {\"field\": \"Ordem\", \"op\": \"min\"}, \"title\": null, \"axis\": {\"labelAngle\": 0, \"labelFontSize\": 10, \"labelExpr\": \"replace(datum.label, ''Mais de 90 dias'', ''90+ dias'')\"}}, \"y\": {\"field\": \"A receber por faixa\", \"type\": \"quantitative\", \"axis\": null, \"scale\": {\"type\": \"sqrt\"}}}, \"layer\": [{\"mark\": {\"type\": \"bar\", \"cornerRadiusEnd\": 3, \"width\": {\"band\": 0.62}}, \"encoding\": {\"color\": {\"field\": \"Ordem\", \"type\": \"ordinal\", \"legend\": null, \"scale\": {\"range\": [\"#5EC4D3\", \"#FCD34D\", \"#F59E0B\", \"#FB923C\", \"#F87171\"]}}, \"tooltip\": [{\"field\": \"Faixa\"}, {\"field\": \"rotulo\", \"title\": \"A receber\"}, {\"field\": \"parte\", \"title\": \"% da carteira\"}]}}, {\"mark\": {\"type\": \"text\", \"baseline\": \"bottom\", \"dy\": -17, \"fontSize\": 10, \"fontWeight\": \"bold\", \"color\": \"#FFFFFF\"}, \"encoding\": {\"text\": {\"field\": \"rotulo\"}}}, {\"mark\": {\"type\": \"text\", \"baseline\": \"bottom\", \"dy\": -4, \"fontSize\": 9, \"color\": \"#9FB3B8\"}, \"encoding\": {\"text\": {\"field\": \"parte\"}}}]}'"
+                }
+              }
+            },
+            "jsonConfig": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\"autosize\": {\"type\": \"fit\", \"contains\": \"padding\"}, \"background\": \"transparent\", \"padding\": 6, \"view\": {\"stroke\": \"transparent\"}, \"font\": \"Segoe UI\", \"axis\": {\"labelColor\": \"#B9CBCF\", \"labelFontSize\": 11, \"domain\": false, \"ticks\": false, \"grid\": false, \"labelPadding\": 6, \"title\": null, \"gridColor\": \"rgba(255,255,255,0.08)\"}, \"text\": {\"fontSize\": 11, \"color\": \"#FFFFFF\"}, \"tooltip\": {\"fontSize\": 12}}'"
+                }
+              }
+            },
+            "provider": {
+              "expr": {
+                "Literal": {
+                  "Value": "'vegaLite'"
+                }
+              }
+            },
+            "renderMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'svg'"
+                }
+              }
+            },
+            "enableTooltips": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "enableContextMenu": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "enableSelection": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableHighlight": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'6.4.3'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stateManagement": [
+        {
+          "properties": {
+            "viewportHeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "178D"
+                }
+              }
+            },
+            "viewportWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "326D"
+                }
+              }
+            },
+            "supportFieldConfiguration": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\"Faixa\": {\"highlight\": false, \"highlightStatus\": false, \"highlightComparator\": false, \"format\": false, \"formatted\": false, \"names\": false}, \"Ordem\": {\"highlight\": false, \"highlightStatus\": false, \"highlightComparator\": false, \"format\": false, \"formatted\": false, \"names\": false}, \"A receber por faixa\": {\"highlight\": false, \"highlightStatus\": false, \"highlightComparator\": false, \"format\": true, \"formatted\": true, \"names\": false}}'"
+                }
+              }
+            },
+            "denebMetaVersion": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2'"
+                }
+              }
+            },
+            "consolidateFieldParameters": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "developer": [
+        {
+          "properties": {
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2.0.1.0'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

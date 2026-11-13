@@ -281,6 +281,204 @@ table _Medidas
 		displayFolder: Capital de giro
 		lineageTag: 549d869d-8eb3-4ac8-82aa-00a574c4ffe1
 
+	measure '% Margem EBITDA ano anterior' = CALCULATE([% Margem EBITDA], SAMEPERIODLASTYEAR('Calendário'[Data]))
+		formatString: 0.0%
+		displayFolder: Resultado
+		lineageTag: c7da047b-5361-4a32-aad4-e3592362f12f
+
+	measure '% Margem líquida ano anterior' = CALCULATE([% Margem líquida], SAMEPERIODLASTYEAR('Calendário'[Data]))
+		formatString: 0.0%
+		displayFolder: Resultado
+		lineageTag: f4258b86-129b-4e83-a95a-4cd453d5bd64
+
+	/// Valor DRE em milhares, para a matriz.
+	measure 'Valor DRE (R$ mil)' = DIVIDE([Valor DRE], 1000)
+		formatString: #,0
+		displayFolder: Resultado
+		lineageTag: adcd577f-ec4a-4c33-a6ac-e21b7b1ed4a2
+
+	/// Formatação condicional da matriz (fonte): subtotais em âmbar.
+	measure 'Cor fonte DRE' = IF(SELECTEDVALUE('Linhas DRE'[Tipo]) = "Subtotal", "#FBBF24", "#FFFFFF")
+		displayFolder: Resultado
+		lineageTag: f976e6e4-c922-4dd6-a158-78e02ef5c798
+
+	/// Distribuição de lucros paga no período: sai do caixa, mas não é despesa.
+	measure 'Retirada dos sócios' = CALCULATE([Saídas], Fornecedores[Categoria] = "Sócios")
+		formatString: "R$" #,0
+		displayFolder: Caixa
+		lineageTag: 90342c78-1a33-4e95-919c-f265e5e85e51
+
+	measure 'PMR ano anterior' = CALCULATE([PMR], DATEADD('Calendário'[Data], -1, YEAR))
+		formatString: 0
+		displayFolder: Capital de giro
+		lineageTag: ad774148-2523-4751-8797-02706c112e53
+
+	/// Cartão HTML (visual HTML Content): rótulo, valor e contexto.
+	measure 'Card Receita líquida' =
+			VAR _v = [Receita líquida]
+			VAR _var = [% Var. receita a/a]
+			VAR _valor = IF(ISBLANK(_v), "–", "R$ " & FORMAT(_v / 1000000, "#,0.00", "pt-BR") & " mi")
+			VAR _sub = IF(ISBLANK(_var), "sem ano anterior para comparar", IF(_var >= 0, "▲ ", "▼ ") & FORMAT(ABS(_var), "0.0%", "pt-BR") & " vs ano anterior")
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>RECEITA LÍQUIDA</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>" & _sub & "</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: 3da4047e-2af3-4a71-a71b-f7079720e306
+
+	/// Cartão HTML (visual HTML Content): rótulo, valor e contexto.
+	measure 'Card Margem bruta' =
+			VAR _m = [% Margem bruta]
+			VAR _valor = IF(ISBLANK(_m), "–", FORMAT(_m, "0.0%", "pt-BR"))
+			VAR _sub = "lucro bruto de R$ " & FORMAT([Lucro bruto] / 1000000, "#,0.00", "pt-BR") & " mi"
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>MARGEM BRUTA</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>" & _sub & "</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: 57797fc9-df36-4b22-8907-4097cccaf548
+
+	/// Cartão HTML (visual HTML Content): rótulo, valor e contexto.
+	measure 'Card EBITDA' =
+			VAR _v = [EBITDA]
+			VAR _m = [% Margem EBITDA]
+			VAR _ant = [% Margem EBITDA ano anterior]
+			VAR _pp = (_m - _ant) * 100
+			VAR _valor = IF(ISBLANK(_v), "–", IF(_v < 0, "−", "") & "R$ " & FORMAT(ABS(_v) / 1000000, "#,0.00", "pt-BR") & " mi")
+			VAR _sub = "margem de " & FORMAT(_m, "0.0%", "pt-BR") & IF(ISBLANK(_ant), "", " (" & IF(_pp >= 0, "▲ ", "▼ ") & FORMAT(ABS(_pp), "0.0", "pt-BR") & " p.p. a/a)")
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>EBITDA</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>" & _sub & "</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: 220e1e3c-7141-42b5-a65b-fea809de335d
+
+	/// Cartão HTML (visual HTML Content). Valor em vermelho-claro quando sai mais do que entra.
+	measure 'Card Geração de caixa' =
+			VAR _v = [Geração de caixa]
+			VAR _valor = IF(ISBLANK(_v), "–", IF(_v < 0, "−", "") & "R$ " & FORMAT(ABS(_v) / 1000000, "#,0.00", "pt-BR") & " mi")
+			VAR _cor = IF(_v < 0, "#F87171", "#FFFFFF")
+			VAR _sub = "entrou R$ " & FORMAT([Entradas] / 1000000, "#,0.0", "pt-BR") & " mi, saiu R$ " & FORMAT([Saídas] / 1000000, "#,0.0", "pt-BR") & " mi"
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>GERAÇÃO DE CAIXA</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15;color:" & _cor & "'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>" & _sub & "</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: 998b63cb-598a-4d98-a753-84d08fa6a293
+
+	/// Cartão HTML (visual HTML Content): o lucro do mesmo período, comparado à geração de caixa.
+	measure 'Card Lucro x caixa' =
+			VAR _v = [Lucro líquido]
+			VAR _dif = _v - [Geração de caixa]
+			VAR _valor = IF(ISBLANK(_v), "–", IF(_v < 0, "−", "") & "R$ " & FORMAT(ABS(_v) / 1000000, "#,0.00", "pt-BR") & " mi")
+			VAR _sub = "R$ " & FORMAT(ABS(_dif) / 1000000, "#,0.00", "pt-BR") & " mi " & IF(_dif >= 0, "acima", "abaixo") & " da geração de caixa"
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>LUCRO LÍQUIDO</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>" & _sub & "</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: 2f63edbf-7391-4e1c-ba9a-cc081ac6852a
+
+	/// Cartão HTML (visual HTML Content): rótulo, valor e contexto.
+	measure 'Card Retirada dos sócios' =
+			VAR _v = [Retirada dos sócios]
+			VAR _valor = IF(ISBLANK(_v), "–", "R$ " & FORMAT(_v / 1000000, "#,0.00", "pt-BR") & " mi")
+			VAR _sub = FORMAT(DIVIDE(_v, [Lucro líquido]), "0%", "pt-BR") & " do lucro líquido do período"
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>RETIRADA DOS SÓCIOS</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>" & _sub & "</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: 7ac7bc2d-2715-46ad-8fd1-4d57b876a92a
+
+	/// Cartão HTML (visual HTML Content): rótulo, valor e contexto.
+	measure 'Card PMR' =
+			VAR _v = [PMR]
+			VAR _ant = [PMR ano anterior]
+			VAR _dif = ROUND(_v, 0) - ROUND(_ant, 0)
+			VAR _valor = IF(ISBLANK(_v), "–", FORMAT(_v, "0", "pt-BR") & " dias")
+			VAR _sub = IF(ISBLANK(_ant), "prazo médio de recebimento", IF(_dif >= 0, "▲ ", "▼ ") & FORMAT(ABS(_dif), "0", "pt-BR") & " dias vs ano anterior")
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>PMR · PRAZO DE RECEBIMENTO</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>" & _sub & "</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: dbb8d1e7-4174-4ec8-b995-21e975f4ce55
+
+	/// Cartão HTML (visual HTML Content): rótulo, valor e contexto.
+	measure 'Card PMP' =
+			VAR _v = [PMP]
+			VAR _valor = IF(ISBLANK(_v), "–", FORMAT(_v, "0", "pt-BR") & " dias")
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>PMP · PRAZO DE PAGAMENTO</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>fornecedores de mercadoria</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: 54c1f3e3-8c7c-4aaf-b09a-a28504d562f7
+
+	/// Cartão HTML (visual HTML Content): rótulo, valor e contexto.
+	measure 'Card Ciclo financeiro' =
+			VAR _v = [Ciclo financeiro]
+			VAR _valor = IF(ISBLANK(_v), "–", FORMAT(_v, "0", "pt-BR") & " dias")
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>CICLO FINANCEIRO</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>dias de venda bancados pelo caixa</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: 6acc87c1-05f4-49ca-ad34-e0f58585cbb2
+
+	/// Cartão HTML (visual HTML Content). Vermelho-claro acima de 3% (o histórico da empresa era ~2%).
+	measure 'Card Inadimplência' =
+			VAR _v = [% Inadimplência 90+]
+			VAR _valor = IF(ISBLANK(_v), "–", FORMAT(_v, "0.0%", "pt-BR"))
+			VAR _cor = IF(_v > 0.03, "#F87171", "#FFFFFF")
+			VAR _sub = "R$ " & FORMAT([Vencido 90+] / 1000, "#,0", "pt-BR") & " mil vencidos há mais de 90 dias"
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>INADIMPLÊNCIA 90+</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15;color:" & _cor & "'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>" & _sub & "</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: ec65722f-4c9a-4f29-9914-d004690b9b1b
+
+	/// Cartão HTML: frete realizado x orçado. Coral acima de 105% do orçamento.
+	measure 'Card Logística' =
+			VAR _real = -CALCULATE([Resultado], 'Plano de contas'[Grupo DRE] = "Logística")
+			VAR _orc = -CALCULATE([Orçado], 'Plano de contas'[Grupo DRE] = "Logística")
+			VAR _p = DIVIDE(_real, _orc)
+			VAR _valor = IF(ISBLANK(_real), "–", "R$ " & FORMAT(_real / 1000000, "#,0.00", "pt-BR") & " mi")
+			VAR _cor = IF(_p > 1.05, "#F87171", "#FFFFFF")
+			VAR _sub = FORMAT(_p, "0%", "pt-BR") & " do orçado em fretes"
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>LOGÍSTICA</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15;color:" & _cor & "'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>" & _sub & "</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: 41de289c-297b-403c-9ddc-b07682e27e5b
+
+	/// Cartão HTML: meses do período que fecharam com caixa negativo.
+	measure 'Card Meses no vermelho' =
+			VAR _n = COUNTROWS(FILTER(VALUES('Calendário'[Ano-mês nº]), [Saldo de caixa] < 0)) + 0
+			VAR _valor = FORMAT(_n, "0") & IF(_n = 1, " mês", " meses")
+			VAR _cor = IF(_n > 0, "#F87171", "#FFFFFF")
+			RETURN
+			"<div style='font-family:Segoe UI,sans-serif;color:#FFFFFF;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px'>"
+			    & "<div style='font-size:10px;font-weight:600;letter-spacing:.6px;color:#9FB3B8'>MESES NO VERMELHO</div>"
+			    & "<div style='font-size:22px;font-weight:700;line-height:1.15;color:" & _cor & "'>" & _valor & "</div>"
+			    & "<div style='font-size:10px;color:#9FB3B8'>fechados com saldo de caixa negativo</div></div>"
+		displayFolder: Cartões HTML
+		lineageTag: 9e390ee0-c6a8-4859-8719-ba2a34e0ba2a
+
 	column x
 		isHidden
 		lineageTag: 070175e1-43e5-4c97-96cd-4dceda059786
