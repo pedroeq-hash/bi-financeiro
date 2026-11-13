@@ -26,15 +26,15 @@ RODAPE = "#6E868C"
 
 PAGINAS = {
     "resultado": {"menu": "Resultado", "titulo": "RESULTADO (DRE)",
-                  "subtitulo": "A Prumo cresce e dá lucro, mas a margem encolhe",
+                  "subtitulo": "Receita, margens e despesas por competência, contra o orçamento",
                   "principal": "DRE dos três anos (R$ mil e % da receita líquida)",
                   "segundo": "Realizado x orçado por grupo (100% = orçado)"},
     "caixa": {"menu": "Caixa", "titulo": "CAIXA",
-              "subtitulo": "O lucro não vira caixa: o dinheiro fica com os clientes",
+              "subtitulo": "Entradas, saídas e saldo pelas datas de recebimento e pagamento",
               "principal": "Lucro líquido x geração de caixa por mês",
               "segundo": "Para onde foi o dinheiro no ano"},
     "capitalGiro": {"menu": "Capital de giro", "titulo": "CAPITAL DE GIRO",
-                    "subtitulo": "Mais prazo para vender mais, e quem paga pior entrou junto",
+                    "subtitulo": "Prazos de recebimento e pagamento, carteira a receber e inadimplência",
                     "principal": "Prazo de recebimento (PMR) x prazo de pagamento (PMP), em dias",
                     "segundo": "Carteira a receber por faixa de atraso"},
 }
